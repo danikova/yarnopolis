@@ -1,0 +1,10 @@
+# Ignore node_modules in the frontend folder
+frontend/node_modules
+frontend/dist
+
+# Ignore bin in the backend folder
+backend/pocketbase
+backend/pb_data
+backend/CHANGELOG.md
+backend/LICENSE.md
+backend/pb_public

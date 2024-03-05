@@ -1,0 +1,10 @@
+{
+  "name": "pocketbase-react-template",
+  "version": "1.0.0",
+  "scripts": {
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.0.11"
+  }
+}
