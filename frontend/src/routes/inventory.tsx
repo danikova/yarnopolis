@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useYarns } from '@/@data/yarns';
+import { YarnItem } from '@/components/yarnItem';
 
 export const Route = createFileRoute('/inventory')({
   component: Inventory,
@@ -8,11 +9,9 @@ export const Route = createFileRoute('/inventory')({
 function Inventory() {
   const { data } = useYarns();
 
-  console.log(data);
-
   return (
-    <div className="p-8">
-      {/* <DataTable columns={columns} data={data ?? []} /> */}
+    <div className="flex flex-wrap gap-4 p-8">
+      {data?.map(yarn => <YarnItem key={yarn.id} data={yarn} />)}
     </div>
   );
 }
