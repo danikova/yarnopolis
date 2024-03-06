@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { Badge } from './ui/badge';
 import randomColor from 'randomcolor';
-import { Skeleton } from './ui/skeleton';
 import { YarnTypeRecord } from '@/@data/yarnTypes.types';
 import { ManufacturerRecord } from '@/@data/manufacturers.types';
 
@@ -13,11 +12,11 @@ interface BadgeProps {
 
 export function RandomColorBadge({ value, seed, hue }: BadgeProps) {
   const color = useMemo(
-    () => randomColor({ luminosity: 'dark', seed: seed + value, hue }),
+    () => randomColor({ luminosity: 'light', seed: seed + value, hue }),
     [seed, value, hue]
   );
   return (
-    <Badge className="w-fit" style={{ background: color }}>
+    <Badge className="w-fit text-foreground" style={{ background: color }}>
       {value}
     </Badge>
   );
@@ -26,9 +25,7 @@ export function RandomColorBadge({ value, seed, hue }: BadgeProps) {
 export function YarnTypeBadge({ yarnType }: { yarnType?: YarnTypeRecord }) {
   return yarnType ? (
     <RandomColorBadge value={yarnType.name} seed={yarnType.id} hue="pink" />
-  ) : (
-    <Skeleton className="h-5 w-14" />
-  );
+  ) : null;
 }
 
 export function ManufacturerBadge({
@@ -42,9 +39,7 @@ export function ManufacturerBadge({
       seed={manufacturer.id}
       hue="blue"
     />
-  ) : (
-    <Skeleton className="h-5 w-14" />
-  );
+  ) : null;
 }
 
 export function ColorCodeBadge({
@@ -54,12 +49,20 @@ export function ColorCodeBadge({
   color: any;
   value?: string;
 }) {
-  return value ? (
-    <Badge className="w-fit" style={{ background: color }}>
-      <span className="pr-2">Color code:</span>
-      {value}
-    </Badge>
-  ) : (
-    <Skeleton className="h-5 w-14" />
-  );
+  if (value)
+    return (
+      <Badge className="w-fit" style={{ background: color }}>
+        <span className="pr-2">Color code:</span>
+        {value}
+      </Badge>
+    );
+
+  if (color)
+    return (
+      <Badge className="w-fit" style={{ background: color }}>
+        Color
+      </Badge>
+    );
+
+  return null;
 }

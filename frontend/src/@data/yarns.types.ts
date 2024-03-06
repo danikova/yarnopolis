@@ -8,7 +8,7 @@ import { YarnTypeRecord } from './yarnTypes.types';
 export interface YarnRecord
   extends ExpandedBaseRecord<{
     size: SizeRecord[];
-    pictures: PictureRecord[];
+    pictures: PictureRecord;
     color: ColorRecord;
     type: YarnTypeRecord;
     manufacturer: ManufacturerRecord;
@@ -17,7 +17,7 @@ export interface YarnRecord
   manufacturer: string;
   type: string;
   size: string[];
-  pictures: string[];
+  pictures: string;
   color: string;
   quantity: number;
   weight: number;

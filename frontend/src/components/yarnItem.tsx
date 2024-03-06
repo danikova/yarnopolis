@@ -1,16 +1,12 @@
-import { YarnRecord } from '@/@data/yarns.types';
-import { Scale, Sigma } from 'lucide-react';
-import { ColorCodeBadge, ManufacturerBadge, YarnTypeBadge } from './badges';
-import { ItemBase, ItemDetailWrapper, ItemPictures } from './item';
 import { IconLabel } from './labels';
 import { SizingLabel } from './sizeing';
+import { Scale, Sigma } from 'lucide-react';
 import { CSSProperties, useMemo } from 'react';
+import { YarnRecord } from '@/@data/yarns.types';
+import { ItemBase, ItemDetailWrapper, ItemPictures } from './item';
+import { ColorCodeBadge, ManufacturerBadge, YarnTypeBadge } from './badges';
 
-interface YarnItemProps {
-  data: YarnRecord;
-}
-
-export function YarnItem({ data }: YarnItemProps) {
+export function YarnItem({ data }: { data: YarnRecord }) {
   const { color } = data.expand ?? {};
   const hslString = useMemo(
     () =>
@@ -27,10 +23,10 @@ export function YarnItem({ data }: YarnItemProps) {
       }
       className="ring-2 ring-[hsla(var(--item-color),0.2)]"
     >
-      {data?.pictures && data.pictures.length > 0 && (
+      {data?.expand?.pictures && (
         <ItemPictures
-          pictures={data?.expand?.pictures ?? []}
-          className="rounded-md ring-2 ring-[hsla(var(--item-color),0.5)]"
+          pictures={[data?.expand?.pictures]}
+          className="rounded-md shadow-[hsl(var(--item-color))] drop-shadow-lg"
         />
       )}
       <ItemDetailWrapper className="flex flex-col">
@@ -40,7 +36,7 @@ export function YarnItem({ data }: YarnItemProps) {
             <YarnTypeBadge yarnType={data?.expand?.type} />
             <ColorCodeBadge color={`hsl(${hslString})`} value={data?.code} />
           </div>
-          <div className="flex flex-col gap-2 pt-4">
+          <div className="flex flex-col gap-2 pt-2">
             <SizingLabel sizeIds={data.size} />
           </div>
         </div>
