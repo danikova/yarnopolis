@@ -10,7 +10,7 @@ function Inventory() {
   const { data } = useYarns();
 
   return (
-    <div className="flex flex-wrap gap-4 p-8">
+    <div className="flex flex-wrap justify-center gap-4 p-8 lg:justify-normal">
       {data?.map(yarn => <YarnItem key={yarn.id} data={yarn} />)}
     </div>
   );
