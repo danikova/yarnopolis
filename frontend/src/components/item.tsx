@@ -2,6 +2,7 @@ import { CSSProperties, PropsWithChildren } from 'react';
 import { Card, CardContent } from './ui/card';
 import { Picture } from './picture';
 import { cn } from '@/lib/utils';
+import { PictureRecord } from '@/@data/pictures.type';
 
 export function ItemBase({
   children,
@@ -19,15 +20,15 @@ export function ItemPictures({
   pictures,
   className,
 }: {
-  pictures: string[];
+  pictures: PictureRecord[];
   className?: string;
 }) {
   return (
     <div className="h-full flex-[0_0_150px]">
-      {pictures.map(pictureId => (
+      {pictures.map(picture => (
         <Picture
-          key={pictureId}
-          pictureId={pictureId}
+          key={picture.id}
+          picture={picture}
           thumb="200x200"
           className={cn(className)}
         />

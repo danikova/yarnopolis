@@ -7,7 +7,10 @@ export function useYarns(
 ) {
   return useQuery({
     queryKey: ['yarns'],
-    queryFn: async () => await pb.collection('yarns').getFullList<YarnRecord>(),
+    queryFn: async () =>
+      await pb.collection('yarns').getFullList<YarnRecord>({
+        expand: 'size,pictures,type,manufacturer,color',
+      }),
     ...options,
   });
 }

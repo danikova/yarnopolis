@@ -1,25 +1,23 @@
 import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { usePicture } from '@/@data/pictures';
 import { AspectRatio } from './ui/aspect-ratio';
 import { PictureRecord } from '@/@data/pictures.type';
 import { pb } from '@/@data/client';
 
 interface PictureProps {
-  pictureId?: PictureRecord['id'];
+  picture?: PictureRecord;
   className?: string;
   thumb?: '200x200' | '300x300' | '1000x1000';
 }
 
-export function Picture({ pictureId, className, thumb }: PictureProps) {
-  const { data } = usePicture(pictureId ?? '', { enabled: !!pictureId });
+export function Picture({ picture, className, thumb }: PictureProps) {
   const src = useMemo(
     () =>
-      data &&
-      pb.files.getUrl(data, data.file, {
+      picture &&
+      pb.files.getUrl(picture, picture.file, {
         thumb: thumb,
       }),
-    [data, thumb]
+    [picture, thumb]
   );
 
   return (
@@ -29,7 +27,7 @@ export function Picture({ pictureId, className, thumb }: PictureProps) {
     >
       <img
         src={src}
-        alt={data?.description}
+        alt={picture?.description}
         className="rounded-md object-cover"
       />
     </AspectRatio>

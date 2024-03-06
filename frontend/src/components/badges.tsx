@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { Badge } from './ui/badge';
 import randomColor from 'randomcolor';
-import { useYarnType } from '@/@data/yarnTypes';
 import { Skeleton } from './ui/skeleton';
-import { useManufacturer } from '@/@data/manufacturers';
+import { YarnTypeRecord } from '@/@data/yarnTypes.types';
+import { ManufacturerRecord } from '@/@data/manufacturers.types';
 
 interface BadgeProps {
   value: string;
@@ -11,7 +11,7 @@ interface BadgeProps {
   hue?: number | string;
 }
 
-export function ColorBadge({ value, seed, hue }: BadgeProps) {
+export function RandomColorBadge({ value, seed, hue }: BadgeProps) {
   const color = useMemo(
     () => randomColor({ luminosity: 'dark', seed: seed + value, hue }),
     [seed, value, hue]
@@ -23,27 +23,42 @@ export function ColorBadge({ value, seed, hue }: BadgeProps) {
   );
 }
 
-interface YarnTypeBadgeProps {
-  yarnTypeId: string;
-}
-
-export function YarnTypeBadge({ yarnTypeId }: YarnTypeBadgeProps) {
-  const { data } = useYarnType(yarnTypeId);
-  return data ? (
-    <ColorBadge value={data.name} seed={yarnTypeId} hue="pink" />
+export function YarnTypeBadge({ yarnType }: { yarnType?: YarnTypeRecord }) {
+  return yarnType ? (
+    <RandomColorBadge value={yarnType.name} seed={yarnType.id} hue="pink" />
   ) : (
     <Skeleton className="h-5 w-14" />
   );
 }
 
-interface ManufacturerBadgeProps {
-  manufacturerId: string;
+export function ManufacturerBadge({
+  manufacturer,
+}: {
+  manufacturer?: ManufacturerRecord;
+}) {
+  return manufacturer ? (
+    <RandomColorBadge
+      value={manufacturer.name}
+      seed={manufacturer.id}
+      hue="blue"
+    />
+  ) : (
+    <Skeleton className="h-5 w-14" />
+  );
 }
 
-export function ManufacturerBadge({ manufacturerId }: ManufacturerBadgeProps) {
-  const { data } = useManufacturer(manufacturerId);
-  return data ? (
-    <ColorBadge value={data.name} seed={manufacturerId} hue="blue" />
+export function ColorCodeBadge({
+  color,
+  value,
+}: {
+  color: any;
+  value?: string;
+}) {
+  return value ? (
+    <Badge className="w-fit" style={{ background: color }}>
+      <span className="pr-2">Color code:</span>
+      {value}
+    </Badge>
   ) : (
     <Skeleton className="h-5 w-14" />
   );
