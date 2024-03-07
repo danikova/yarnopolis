@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useYarns } from '@/@data/yarns';
-import { YarnItem } from '@/components/yarnItem';
+import { YarnItem } from '@/components/items/yarn';
 
 export const Route = createFileRoute('/inventory')({
   component: Inventory,
