@@ -52,7 +52,7 @@ export function ColorCodeBadge({
   if (value)
     return (
       <Badge className="w-fit" style={{ background: color }}>
-        <span className="pr-2">Color code:</span>
+        <span className="pr-2 max-lg:hidden">Color code:</span>
         {value}
       </Badge>
     );

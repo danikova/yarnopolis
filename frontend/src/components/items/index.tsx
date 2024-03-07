@@ -21,7 +21,10 @@ export function ItemBase({
     <Dialog>
       <DialogTrigger asChild>
         <Card
-          className={cn('relative h-fit w-[400px]', className)}
+          className={cn(
+            'relative h-fit w-full md:w-[300px] lg:w-[400px]',
+            className
+          )}
           style={style}
         >
           {bgPicture && (
@@ -34,7 +37,7 @@ export function ItemBase({
             >
               <Picture
                 picture={bgPicture}
-                className="object-cover opacity-50 blur-[1px]"
+                className="h-full w-full object-cover opacity-50 blur-[0.3px]"
               />
             </div>
           )}
