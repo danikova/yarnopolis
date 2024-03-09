@@ -1,6 +1,7 @@
 import { YarnRecord } from '@/@data/yarns.types';
 import { type ClassValue, clsx } from 'clsx';
 import { useMemo } from 'react';
+import { useMap as useMapOriginal } from '@uidotdev/usehooks';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -15,4 +16,8 @@ export function useHSLstringFromYarn(yarn: YarnRecord) {
     [color]
   );
   return hslString;
+}
+
+export function useMap<K, V>(initialState?: [K, V][]) {
+  return useMapOriginal(initialState) as never as Map<K, V>;
 }
