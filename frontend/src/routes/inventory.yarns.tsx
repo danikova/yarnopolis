@@ -1,7 +1,12 @@
+import { useManufacturers } from '@/@data/manufacturers';
+import { ManufacturerRecord } from '@/@data/manufacturers.types';
 import { useYarns } from '@/@data/yarns';
+import { ManufacturerBadge } from '@/components/badges';
 import { YarnItem } from '@/components/items/yarn';
 import { SheetFilter } from '@/components/sheetFilter';
+import { Option } from '@/components/ui/multi-select';
 import { createFileRoute } from '@tanstack/react-router';
+import { useMemo } from 'react';
 import { z } from 'zod';
 
 const YarnFilterSchema = z.object({
@@ -9,6 +14,7 @@ const YarnFilterSchema = z.object({
   color: z.string().optional(),
   weight: z.string().optional(),
   fiber: z.string().optional(),
+  manufacturer: z.array(z.string()).optional(),
 });
 
 export const Route = createFileRoute('/inventory/yarns')({
@@ -16,8 +22,22 @@ export const Route = createFileRoute('/inventory/yarns')({
   validateSearch: YarnFilterSchema.parse,
 });
 
+function useManufacturersOptions(): Option<ManufacturerRecord>[] {
+  const { data } = useManufacturers();
+  return useMemo(
+    () =>
+      data?.map(manufacturer => ({
+        label: manufacturer.name,
+        value: manufacturer,
+      })) ?? [],
+    [data]
+  );
+}
+
 function Inventory() {
   const { data } = useYarns();
+
+  const manufacturerOptions = useManufacturersOptions();
 
   return (
     <>
@@ -43,6 +63,22 @@ function Inventory() {
             },
             fiber: {
               label: 'Fiber',
+            },
+            manufacturer: {
+              label: 'Manufacturer',
+              placeholder: 'Select a manufacturer',
+              options: manufacturerOptions,
+              getItemLabel: (option: Option<ManufacturerRecord>) =>
+                option.value.name,
+              getBadgeComponent: (
+                option: Option<ManufacturerRecord>,
+                deselect
+              ) => (
+                <ManufacturerBadge
+                  manufacturer={option.value}
+                  onClick={deselect}
+                />
+              ),
             },
           },
         }}

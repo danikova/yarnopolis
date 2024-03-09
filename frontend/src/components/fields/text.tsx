@@ -6,17 +6,14 @@ import { Button } from '../ui/button';
 import { X } from 'lucide-react';
 
 interface TextFieldProps extends InputProps {
-  label: string;
+  label?: string;
 }
 
 export function TextField({ label, ...props }: TextFieldProps) {
   const { field, error } = useTsController<string>();
   return (
     <div>
-      <Label htmlFor={field.name}>
-        {}
-        {label}
-      </Label>
+      {label && <Label htmlFor={field.name}>{label}</Label>}
       <div className="flex gap-2">
         <Input
           id={field.name}

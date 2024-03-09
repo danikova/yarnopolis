@@ -4,14 +4,14 @@ import { Label } from '../ui/label';
 import { ErrorLabel } from './errorLabel';
 
 interface NumberFieldProps extends InputProps {
-  label: string;
+  label?: string;
 }
 
 export function NumberField({ label, ...props }: NumberFieldProps) {
   const { field, error } = useTsController<number>();
   return (
     <div>
-      <Label htmlFor={field.name}>{label}</Label>
+      {label && <Label htmlFor={field.name}>{label}</Label>}
       <Input
         id={field.name}
         value={field.value ? field.value : ''}

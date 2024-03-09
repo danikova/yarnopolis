@@ -13,7 +13,7 @@ import { Button } from './ui/button';
 import { useForm } from 'react-hook-form';
 import { useSearch } from '@tanstack/react-router';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { isEmpty, isNil, pickBy, isEqual } from 'lodash';
+import { isEmpty, isNil, pickBy, isEqual, isArray } from 'lodash';
 import { FileRoutesByPath, useNavigate } from '@tanstack/react-router';
 import { ComponentPropsWithoutRef, useMemo, useState } from 'react';
 
@@ -29,10 +29,14 @@ export function SheetFilter(props: SheetFilterProps) {
   const search = useSearch({
     from: props.basePath,
   });
-  const badgeNumber = useMemo(
-    () => Object.values(search).filter(i => !isEmpty(i)).length,
-    [search]
-  );
+  const badgeNumber = useMemo(() => {
+    let count = 0;
+    for (const values of Object.values(search)) {
+      if (isArray(values)) count += values.length;
+      else if (!isNil(values) && !isEmpty(values)) count += 1;
+    }
+    return count;
+  }, [search]);
 
   return (
     <Sheet open={isOpen}>
