@@ -11,18 +11,18 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as InventoryImport } from './routes/inventory'
 import { Route as IndexImport } from './routes/index'
+import { Route as InventoryYarnsImport } from './routes/inventory.yarns'
 
 // Create/Update Routes
 
-const InventoryRoute = InventoryImport.update({
-  path: '/inventory',
+const IndexRoute = IndexImport.update({
+  path: '/',
   getParentRoute: () => rootRoute,
 } as any)
 
-const IndexRoute = IndexImport.update({
-  path: '/',
+const InventoryYarnsRoute = InventoryYarnsImport.update({
+  path: '/inventory/yarns',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -34,8 +34,8 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/inventory': {
-      preLoaderRoute: typeof InventoryImport
+    '/inventory/yarns': {
+      preLoaderRoute: typeof InventoryYarnsImport
       parentRoute: typeof rootRoute
     }
   }
@@ -43,6 +43,9 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren([IndexRoute, InventoryRoute])
+export const routeTree = rootRoute.addChildren([
+  IndexRoute,
+  InventoryYarnsRoute,
+])
 
 /* prettier-ignore-end */
