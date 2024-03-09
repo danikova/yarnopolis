@@ -42,7 +42,13 @@ export function SheetFilter(props: SheetFilterProps) {
     <Sheet open={isOpen}>
       <div className="fixed right-8 top-8 ">
         <SheetTrigger asChild>
-          <Button className="rounded-full" onClick={() => setIsOpen(true)}>
+          <Button
+            className="rounded-full"
+            onClick={e => {
+              e.stopPropagation();
+              setIsOpen(true);
+            }}
+          >
             Filter
           </Button>
         </SheetTrigger>

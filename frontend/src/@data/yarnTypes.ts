@@ -2,14 +2,13 @@ import { pb } from './client';
 import { YarnTypeRecord } from './yarnTypes.types';
 import { UseQueryOptions, useQuery } from '@tanstack/react-query';
 
-export function useYarnType(
-  yarnTypeId: string,
-  options?: Partial<UseQueryOptions<YarnTypeRecord, Error>>
+export function useYarnTypes(
+  options?: Partial<UseQueryOptions<YarnTypeRecord[], Error>>
 ) {
   return useQuery({
-    queryKey: ['yarnTypes', yarnTypeId],
+    queryKey: ['yarnTypes'],
     queryFn: async () =>
-      await pb.collection('yarn_types').getOne<YarnTypeRecord>(yarnTypeId),
+      await pb.collection('yarn_types').getFullList<YarnTypeRecord>(),
     ...options,
   });
 }
