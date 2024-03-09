@@ -6,84 +6,121 @@ import {
   SheetTitle,
   SheetTrigger,
 } from './ui/sheet';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
 import { z } from 'zod';
 import { TsForm } from './tsForm';
-import { MultiSelect, type Option } from './ui/multi-select';
-import { SizeRecord } from '@/@data/sizes.types';
-import { useSizes } from '@/@data/sizes';
-import { useMap } from '@/lib/utils';
+import { Badge } from './ui/badge';
+import { Button } from './ui/button';
+import { useForm } from 'react-hook-form';
+import { useSearch } from '@tanstack/react-router';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { isEmpty, isNil, pickBy, isEqual } from 'lodash';
+import { FileRoutesByPath, useNavigate } from '@tanstack/react-router';
+import { ComponentPropsWithoutRef, useMemo, useState } from 'react';
 
-const SignUpSchema = z.object({
-  email: z.string().email('Enter a real email please.'),
-  password: z.string(),
-  address: z.string(),
-  favoriteColor: z.enum(['blue', 'red', 'purple']),
-  isOver18: z.boolean(),
-});
+export interface SheetFilterProps {
+  basePath: keyof FileRoutesByPath;
+  formProps: ComponentPropsWithoutRef<typeof TsForm>;
+  title?: string;
+  description?: string;
+}
 
-export function SheetFilter() {
-  const { data } = useSizes();
-  const selected = useMap<string, Option<SizeRecord>>();
-
-  function onSubmit(data: z.infer<typeof SignUpSchema>) {
-    console.log(data);
-  }
+export function SheetFilter(props: SheetFilterProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const search = useSearch({
+    from: props.basePath,
+  });
+  const badgeNumber = useMemo(
+    () => Object.values(search).filter(i => !isEmpty(i)).length,
+    [search]
+  );
 
   return (
-    <Sheet>
+    <Sheet open={isOpen}>
       <div className="fixed right-8 top-8 ">
         <SheetTrigger asChild>
-          <Button className="rounded-full">Filter</Button>
+          <Button className="rounded-full" onClick={() => setIsOpen(true)}>
+            Filter
+          </Button>
         </SheetTrigger>
-        <Badge className="absolute -right-3 -top-3 select-none bg-background text-foreground ring-2 ring-foreground hover:pointer-events-none hover:bg-background">
-          10
-        </Badge>
+        {badgeNumber > 0 && (
+          <Badge className="absolute -right-3 -top-3 select-none bg-background text-foreground ring-2 ring-foreground hover:pointer-events-none hover:bg-background">
+            {badgeNumber}
+          </Badge>
+        )}
       </div>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>Are you absolutely sure?</SheetTitle>
-          <SheetDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
-          </SheetDescription>
-        </SheetHeader>
-        <TsForm
-          renderAfter={() => <button type="submit">Submit</button>}
-          schema={SignUpSchema}
-          onSubmit={onSubmit}
-          props={{
-            email: {
-              label: 'Email',
-            },
-            password: {
-              label: 'Password',
-            },
-            address: {
-              label: 'Address',
-            },
-            favoriteColor: {
-              label: 'Favorite Color',
-            },
-            isOver18: {
-              label: 'Are you over 18?',
-            },
-          }}
-        />
-        <MultiSelect
-          options={data?.map(size => ({ label: size.id, value: size })) ?? []}
-          selected={selected}
-          onSelectionChange={data => console.log(data)}
-          getBadgeComponent={(option, deselect) => (
-            <Badge className="flex gap-2">
-              <span>{option.value.value}</span>
-              <span onClick={deselect}>x</span>
-            </Badge>
-          )}
-          getItemLabel={option => option.value.value}
-        />
-      </SheetContent>
+      <SheetForm setIsOpen={setIsOpen} {...props} />
     </Sheet>
   );
+}
+
+interface FormContentProps extends SheetFilterProps {
+  setIsOpen: (isOpen: boolean) => void;
+}
+
+function SheetForm({ setIsOpen, ...props }: FormContentProps) {
+  const defaultValues = useSearch({
+    from: props.basePath,
+  });
+  type FormData = z.infer<typeof props.formProps.schema>;
+  const form = useForm<FormData>({
+    resolver: zodResolver(props.formProps.schema),
+    defaultValues,
+  });
+  const watchedFields = form.watch();
+  const isDirty = useMemo(() => {
+    for (const fieldKey in watchedFields) {
+      if (
+        !isEqual(
+          getKeyValue(defaultValues, fieldKey),
+          getKeyValue(watchedFields, fieldKey)
+        )
+      )
+        return true;
+    }
+    return false;
+  }, [watchedFields, defaultValues]);
+  const navigate = useNavigate();
+
+  return (
+    <SheetContent>
+      <SheetHeader>
+        {props.title && <SheetTitle>{props.title}</SheetTitle>}
+        {props.description && (
+          <SheetDescription>{props.description}</SheetDescription>
+        )}
+      </SheetHeader>
+      <TsForm
+        {...props.formProps}
+        form={form}
+        onSubmit={(data: FormData) => {
+          props.formProps.onSubmit(data);
+          setIsOpen(false);
+          navigate({
+            to: props.basePath,
+            search: pickBy(data, i => !isNil(i) && !isEmpty(i)),
+          });
+        }}
+        renderAfter={() => (
+          <div className="flex gap-4">
+            <Button type="submit" className="flex-1" disabled={!isDirty}>
+              Update
+            </Button>
+            <Button
+              type="button"
+              className="w-fit"
+              variant="destructive"
+              onClick={() => setIsOpen(false)}
+            >
+              Cancel
+            </Button>
+          </div>
+        )}
+      />
+    </SheetContent>
+  );
+}
+
+function getKeyValue(obj: Record<string, any>, key: string) {
+  const value = obj[key];
+  return isNil(value) || isEmpty(value) ? undefined : value;
 }
