@@ -13,19 +13,21 @@ import { Button } from './ui/button';
 import { useForm } from 'react-hook-form';
 import { useSearch } from '@tanstack/react-router';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { isEmpty, isNil, pickBy, isEqual, isArray } from 'lodash';
+import { isEmpty, isNil, pickBy, isEqual, isArray, uniqueId } from 'lodash';
 import { FileRoutesByPath, useNavigate } from '@tanstack/react-router';
 import { ComponentPropsWithoutRef, useMemo, useState } from 'react';
 
+type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export interface SheetFilterProps {
   basePath: keyof FileRoutesByPath;
-  formProps: ComponentPropsWithoutRef<typeof TsForm>;
+  formProps: PartialBy<ComponentPropsWithoutRef<typeof TsForm>, 'onSubmit'>;
   title?: string;
   description?: string;
 }
 
 export function SheetFilter(props: SheetFilterProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [formKey, setFormKey] = useState(uniqueId());
   const search = useSearch({
     from: props.basePath,
   });
@@ -47,6 +49,7 @@ export function SheetFilter(props: SheetFilterProps) {
             onClick={e => {
               e.stopPropagation();
               setIsOpen(true);
+              setFormKey(uniqueId());
             }}
           >
             Filter
@@ -58,7 +61,7 @@ export function SheetFilter(props: SheetFilterProps) {
           </Badge>
         )}
       </div>
-      <SheetForm setIsOpen={setIsOpen} {...props} />
+      <SheetForm key={formKey} setIsOpen={setIsOpen} {...props} />
     </Sheet>
   );
 }
@@ -103,7 +106,7 @@ function SheetForm({ setIsOpen, ...props }: FormContentProps) {
         {...props.formProps}
         form={form}
         onSubmit={(data: FormData) => {
-          props.formProps.onSubmit(data);
+          props.formProps.onSubmit && props.formProps.onSubmit(data);
           setIsOpen(false);
           navigate({
             to: props.basePath,
@@ -111,9 +114,22 @@ function SheetForm({ setIsOpen, ...props }: FormContentProps) {
           });
         }}
         renderAfter={() => (
-          <div className="flex gap-4">
-            <Button type="submit" className="flex-1" disabled={!isDirty}>
+          <div className="flex flex-row-reverse flex-wrap gap-4">
+            <Button
+              type="submit"
+              className="flex-[1_1_100%]"
+              disabled={!isDirty}
+            >
               Update
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              className="w-fit"
+              onClick={() => form.reset(defaultValues)}
+              disabled={!isDirty}
+            >
+              Reset
             </Button>
             <Button
               type="button"
