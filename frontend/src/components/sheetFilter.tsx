@@ -16,11 +16,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { isEmpty, isNil, pickBy, isEqual, isArray, uniqueId } from 'lodash';
 import { FileRoutesByPath, useNavigate } from '@tanstack/react-router';
 import { ComponentPropsWithoutRef, useMemo, useState } from 'react';
+import { cn } from '@/lib/utils';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export interface SheetFilterProps {
   basePath: keyof FileRoutesByPath;
   formProps: PartialBy<ComponentPropsWithoutRef<typeof TsForm>, 'onSubmit'>;
+  classname?: string;
   title?: string;
   description?: string;
 }
@@ -42,7 +44,7 @@ export function SheetFilter(props: SheetFilterProps) {
 
   return (
     <Sheet open={isOpen}>
-      <div className="fixed right-8 top-8 ">
+      <div className={cn(props.classname)}>
         <SheetTrigger asChild>
           <Button
             className="rounded-full"

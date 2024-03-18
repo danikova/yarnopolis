@@ -13,6 +13,7 @@ import {
   YarnTypesField,
   YarnTypesSchema,
 } from './fields/specificMultiSelects';
+import { SizeMinMaxField, SizeMinMaxSchema } from './fields/sizeMinMax';
 
 const mapping = [
   [z.string(), TextField] as const,
@@ -22,6 +23,7 @@ const mapping = [
   [ManufacturersSchema, ManufacturersField] as const,
   [YarnTypesSchema, YarnTypesField] as const,
   [YarnCodesSchema, YarnCodesField] as const,
+  [SizeMinMaxSchema, SizeMinMaxField] as const,
 ] as const;
 
 function MyCustomFormComponent({

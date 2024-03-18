@@ -1,7 +1,7 @@
 import { ItemBase } from '.';
 import { CSSProperties } from 'react';
 import { IconLabel } from '../labels';
-import { SizingLabel } from '../sizing';
+import { SizingLabelByIds } from '../sizing';
 import { Scale, Sigma } from 'lucide-react';
 import { YarnRecord } from '@/@data/yarns.types';
 import { ColorCodeBadge, ManufacturerBadge, YarnTypeBadge } from '../badges';
@@ -34,7 +34,7 @@ export function YarnItem({ data: yarn }: { data: YarnRecord }) {
             />
           </div>
           <div className="flex flex-col gap-2 pt-2">
-            <SizingLabel sizeIds={yarn.size} />
+            <SizingLabelByIds sizeIds={yarn.size} />
           </div>
         </div>
         <div className="flex flex-[0_0_auto] flex-row-reverse gap-4">

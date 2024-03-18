@@ -17,6 +17,7 @@ export interface MultiSelectProps<T = BaseRecord> {
   getItemLabel: (option: Option<T>) => any;
   onSelectionChange?: (selected: Option<T>[]) => void;
   placeholder?: string;
+  multiselect?: boolean;
 }
 
 export function MultiSelect<T extends BaseRecord = BaseRecord>({
@@ -25,6 +26,7 @@ export function MultiSelect<T extends BaseRecord = BaseRecord>({
   onSelectionChange,
   getBadgeComponent,
   getItemLabel: getItemComponent,
+  multiselect = true,
   ...props
 }: MultiSelectProps<T>) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -67,9 +69,13 @@ export function MultiSelect<T extends BaseRecord = BaseRecord>({
             <SelectItem
               value={option.value.id}
               onClick={() => {
-                const newSelectedSet = new Set(selectedSet);
-                newSelectedSet.add(option);
-                onSelectionChange && onSelectionChange([...newSelectedSet]);
+                if(multiselect){
+                  const newSelectedSet = new Set(selectedSet);
+                  newSelectedSet.add(option);
+                  onSelectionChange && onSelectionChange([...newSelectedSet]);
+                } else {
+                  onSelectionChange && onSelectionChange([option]);
+                }
               }}
             >
               {getItemComponent(option)}

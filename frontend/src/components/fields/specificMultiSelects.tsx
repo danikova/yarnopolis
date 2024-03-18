@@ -33,7 +33,7 @@ export const ManufacturersSchema = createUniqueFieldSchema(
   z.array(z.string()),
   'manufacturer'
 );
-export function ManufacturersField() {
+export function ManufacturersField(props: any) {
   const options = useOptions(useManufacturers, item => item.id);
   return (
     <MultiSelectField
@@ -44,6 +44,7 @@ export function ManufacturersField() {
       getBadgeComponent={(option: Option<ManufacturerRecord>, deselect) => (
         <ManufacturerBadge manufacturer={option.value} onClick={deselect} />
       )}
+      {...props}
     />
   );
 }
@@ -52,17 +53,18 @@ export const YarnTypesSchema = createUniqueFieldSchema(
   z.array(z.string()),
   'yarnTypes'
 );
-export function YarnTypesField() {
+export function YarnTypesField(props: any) {
   const options = useOptions(useYarnTypes, item => item.id);
   return (
     <MultiSelectField
-      label="Yarn types"
+      label="Yarn type"
       placeholder="Select a yarn type to filter"
       options={options}
       getItemLabel={(option: Option<YarnTypeRecord>) => option.value.name}
       getBadgeComponent={(option: Option<YarnTypeRecord>, deselect) => (
         <YarnTypeBadge yarnType={option.value} onClick={deselect} />
       )}
+      {...props}
     />
   );
 }
@@ -71,7 +73,7 @@ export const YarnCodesSchema = createUniqueFieldSchema(
   z.array(z.string()),
   'yarnCodes'
 );
-export function YarnCodesField() {
+export function YarnCodesField(props: any) {
   const options = useOptions(useYarnCodes, item => item.code);
   return (
     <MultiSelectField
@@ -83,6 +85,7 @@ export function YarnCodesField() {
         <Badge onClick={deselect}>{option.value.code}</Badge>
       )}
       getOptId={(option: Option<YarnCodesRecord>) => option.value.code}
+      {...props}
     />
   );
 }

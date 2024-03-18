@@ -13,6 +13,7 @@ export function NumberField({ label, ...props }: NumberFieldProps) {
     <div>
       {label && <Label htmlFor={field.name}>{label}</Label>}
       <Input
+        type="number"
         id={field.name}
         value={field.value ? field.value : ''}
         onChange={e => {

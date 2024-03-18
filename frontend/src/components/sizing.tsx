@@ -3,7 +3,7 @@ import { Ruler } from 'lucide-react';
 import { useSizes } from '@/@data/sizes';
 import { isNaN } from 'lodash';
 
-export function SizingLabel({ sizeIds }: { sizeIds: string[] }) {
+export function SizingLabelByIds({ sizeIds }: { sizeIds: string[] }) {
   const { data } = useSizes();
   const sizeMapping = useMemo(() => {
     const mapping: Record<string, number> = {};
@@ -28,17 +28,22 @@ export function SizingLabel({ sizeIds }: { sizeIds: string[] }) {
       </div>
     );
 
+  return <SizingLabel min={min} max={max} />;
+}
+
+export function SizingLabel({ min, max }: { min: number; max: number }) {
   if (max - min < 0.0005)
     return (
       <div className="flex gap-2">
-        <span>{isNaN(min) ? 0 : min}</span>
+        <span>{isNaN(min) ? 0.0 : min.toFixed(1)}</span>
         <Ruler className="h-5 w-5 opacity-70" />
       </div>
     );
 
   return (
     <div className="flex gap-2">
-      <span>{isNaN(min) ? 0 : min}</span>-<span>{isNaN(max) ? 0 : max}</span>
+      <span>{isNaN(min) ? 0.0 : min.toFixed(1)}</span>-
+      <span>{isNaN(max) ? 0.0 : max.toFixed(1)}</span>
       <Ruler className="h-5 w-5 opacity-70" />
     </div>
   );
