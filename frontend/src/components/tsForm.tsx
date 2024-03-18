@@ -14,6 +14,10 @@ import {
   YarnTypesSchema,
 } from './fields/specificMultiSelects';
 import { SizeMinMaxField, SizeMinMaxSchema } from './fields/sizeMinMax';
+import {
+  CameraCaptureField,
+  CameraCaptureSchema,
+} from './fields/cameraCapture';
 
 const mapping = [
   [z.string(), TextField] as const,
@@ -24,6 +28,7 @@ const mapping = [
   [YarnTypesSchema, YarnTypesField] as const,
   [YarnCodesSchema, YarnCodesField] as const,
   [SizeMinMaxSchema, SizeMinMaxField] as const,
+  [CameraCaptureSchema, CameraCaptureField] as const,
 ] as const;
 
 function MyCustomFormComponent({

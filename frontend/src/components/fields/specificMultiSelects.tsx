@@ -11,7 +11,7 @@ import { z } from 'zod';
 import { useYarnTypes } from '@/@data/yarnTypes';
 import { YarnTypeRecord } from '@/@data/yarnTypes.types';
 import { useYarnCodes } from '@/@data/yarnCodes';
-import { YarnCodesRecord } from '@/@data/yarnCodes.types';
+import { YarnCodeRecord } from '@/@data/yarnCodes.types';
 import { Badge } from '../ui/badge';
 
 function useOptions<T extends BaseRecord = BaseRecord>(
@@ -80,11 +80,11 @@ export function YarnCodesField(props: any) {
       label="Yarn codes"
       placeholder="Select a yarn code to filter"
       options={options}
-      getItemLabel={(option: Option<YarnCodesRecord>) => option.value.code}
-      getBadgeComponent={(option: Option<YarnCodesRecord>, deselect) => (
+      getItemLabel={(option: Option<YarnCodeRecord>) => option.value.code}
+      getBadgeComponent={(option: Option<YarnCodeRecord>, deselect) => (
         <Badge onClick={deselect}>{option.value.code}</Badge>
       )}
-      getOptId={(option: Option<YarnCodesRecord>) => option.value.code}
+      getOptId={(option: Option<YarnCodeRecord>) => option.value.code}
       {...props}
     />
   );

@@ -1,5 +1,5 @@
 import { BaseRecord } from './base.types';
 
-export interface YarnCodesRecord extends BaseRecord {
+export interface YarnCodeRecord extends BaseRecord {
   code: string;
 }

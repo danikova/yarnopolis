@@ -28,7 +28,7 @@ export function DialogForm(props: DialogFormProps) {
   const [formKey, setFormKey] = useState(uniqueId());
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen}>
       <div className={cn(props.classname)}>
         <DialogTrigger asChild>
           <Button
@@ -59,7 +59,7 @@ function DialogFormContent({ setIsOpen, ...props }: FormContentProps) {
   });
 
   return (
-    <DialogContent>
+    <DialogContent className="max-h-svh overflow-x-auto">
       <DialogHeader>
         {props.title && <DialogTitle>{props.title}</DialogTitle>}
         {props.description && (

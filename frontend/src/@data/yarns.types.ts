@@ -3,6 +3,7 @@ import { ColorRecord } from './colors.types';
 import { ManufacturerRecord } from './manufacturers.types';
 import { PictureRecord } from './pictures.type';
 import { SizeRecord } from './sizes.types';
+import { YarnCodeRecord } from './yarnCodes.types';
 import { YarnTypeRecord } from './yarnTypes.types';
 
 export interface YarnRecord
@@ -12,6 +13,7 @@ export interface YarnRecord
     color: ColorRecord;
     type: YarnTypeRecord;
     manufacturer: ManufacturerRecord;
+    code: YarnCodeRecord;
   }> {
   code: string;
   manufacturer: string;

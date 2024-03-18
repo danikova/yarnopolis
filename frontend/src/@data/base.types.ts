@@ -5,3 +5,6 @@ export interface BaseRecord extends RecordModel {}
 export interface ExpandedBaseRecord<T> extends BaseRecord {
   expand?: Partial<T>;
 }
+
+type BaseRecordKeys = keyof BaseRecord;
+export type CreateRecordInput<T> = Omit<T, BaseRecordKeys>;

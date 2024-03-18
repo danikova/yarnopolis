@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { useYarns } from '@/@data/yarns';
+import { useCreateYarn, useYarns } from '@/@data/yarns';
 import {
   ManufacturersSchema,
   YarnCodesSchema,
@@ -10,6 +10,9 @@ import { SheetFilter } from '@/components/sheetFilter';
 import { createFileRoute } from '@tanstack/react-router';
 import { DialogForm } from '@/components/dialogForm';
 import { SizeMinMaxSchema } from '@/components/fields/sizeMinMax';
+import { CameraCaptureSchema } from '@/components/fields/cameraCapture';
+import { useCreateColor } from '@/@data/colors';
+import { useCallback } from 'react';
 
 const YarnFilterSchema = z.object({
   manufacturer: ManufacturersSchema.optional(),
@@ -21,8 +24,9 @@ const YarnFilterSchema = z.object({
 const CreateNewYarnSchema = z.object({
   code: z.string().optional(),
   manufacturer: ManufacturersSchema.optional(),
-  yarnTypes: YarnTypesSchema.optional(),
-  sizes: SizeMinMaxSchema.optional(),
+  type: YarnTypesSchema.optional(),
+  picture: CameraCaptureSchema.optional(),
+  size: SizeMinMaxSchema.optional(),
   quantity: z.number().optional(),
   weight: z.number().optional(),
 });
@@ -34,6 +38,7 @@ export const Route = createFileRoute('/inventory/yarns')({
 
 function Inventory() {
   const { data } = useYarns();
+  const onSubmit = useOnSubmit();
 
   return (
     <>
@@ -48,6 +53,7 @@ function Inventory() {
         <DialogForm
           classname="fixed left-8 top-8"
           formProps={{
+            onSubmit,
             schema: CreateNewYarnSchema,
             props: {
               code: {
@@ -73,5 +79,28 @@ function Inventory() {
         {data?.map(yarn => <YarnItem key={yarn.id} data={yarn} />)}
       </div>
     </>
+  );
+}
+
+function useOnSubmit() {
+  const { mutateAsync: createYarn } = useCreateYarn();
+  const { mutateAsync: createColor } = useCreateColor();
+
+  return useCallback(
+    async (data: z.infer<typeof CreateNewYarnSchema>) => {
+      const color = await createColor({
+        hue: data.picture?.color?.h,
+        saturation: data.picture?.color?.s,
+        lightness: data.picture?.color?.l,
+      });
+      const newYarnData = {
+        ...data,
+        pictures: data.picture?.picture,
+        color: color.id,
+      };
+      await createYarn(newYarnData);
+      console.log(newYarnData);
+    },
+    [createYarn, createColor]
   );
 }
