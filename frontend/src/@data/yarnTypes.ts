@@ -15,7 +15,9 @@ export function useYarnTypes(
   return useQuery({
     queryKey: ['yarnTypes'],
     queryFn: async () =>
-      await pb.collection('yarn_types').getFullList<YarnTypeRecord>(),
+      await pb
+        .collection('yarn_types')
+        .getFullList<YarnTypeRecord>({ sort: 'name' }),
     ...options,
   });
 }

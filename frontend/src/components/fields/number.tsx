@@ -2,6 +2,7 @@ import { useTsController } from '@ts-react/form';
 import { Input, type InputProps } from '../ui/input';
 import { Label } from '../ui/label';
 import { ErrorLabel } from './errorLabel';
+import { toNumber } from 'lodash';
 
 interface NumberFieldProps extends InputProps {
   label?: string;
@@ -17,7 +18,7 @@ export function NumberField({ label, ...props }: NumberFieldProps) {
         id={field.name}
         value={field.value ? field.value : ''}
         onChange={e => {
-          field.onChange(parseInt(e.target.value, 10));
+          field.onChange(toNumber(e.target.value));
         }}
         {...props}
       />

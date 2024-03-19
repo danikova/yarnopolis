@@ -15,7 +15,9 @@ export function useManufacturers(
   return useQuery({
     queryKey: ['manufacturers'],
     queryFn: async () =>
-      await pb.collection('manufacturers').getFullList<ManufacturerRecord>(),
+      await pb
+        .collection('manufacturers')
+        .getFullList<ManufacturerRecord>({ sort: 'name' }),
     ...options,
   });
 }

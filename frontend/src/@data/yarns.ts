@@ -16,7 +16,7 @@ export function useYarns(
     queryKey: ['yarns'],
     queryFn: async () =>
       await pb.collection('yarns').getFullList<YarnRecord>({
-        expand: 'hook_size, yarn_size,pictures,type,manufacturer,color,code',
+        expand: 'pictures,type,manufacturer,color',
         sort: '-created',
       }),
     ...options,

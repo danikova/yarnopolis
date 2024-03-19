@@ -7,20 +7,17 @@ import { useCreatePicture } from '@/@data/pictures';
 import { CameraCaptureSchema } from '../fields/cameraCapture';
 import {
   ManufacturersSchema,
-  YarnCodesSchema,
   YarnTypesSchema,
 } from '../fields/specificMultiSelects';
-import { SizeRangeSchema } from '../fields/sizeRange';
-import { SizeMinMaxSchema } from '../fields/sizeMinMax';
 
 export const CreateNewYarnSchema = z.object({
   picture: CameraCaptureSchema,
-  code: YarnCodesSchema.optional(),
+  code: z.string().optional(),
   manufacturer: ManufacturersSchema.optional(),
   type: YarnTypesSchema.optional(),
-  yarn_size: SizeRangeSchema.optional(),
-  hook_size: SizeMinMaxSchema.optional(),
-  quantity: z.number().optional(),
+  yarn_size: z.number().optional(),
+  hook_size_min: z.number().optional(),
+  hook_size_max: z.number().optional(),
   weight: z.number().optional(),
 });
 
@@ -35,14 +32,19 @@ export function CreateYarnDialogForm() {
         schema: CreateNewYarnSchema,
         props: {
           code: {
-            multiselect: false,
-            addOpts: true,
-          },
-          quantity: {
-            label: 'Quantity',
+            label: 'Code',
           },
           weight: {
             label: 'Weight',
+          },
+          hook_size_min: {
+            label: 'Min. hook size',
+          },
+          hook_size_max: {
+            label: 'Max. hook size',
+          },
+          yarn_size: {
+            label: 'Yarn size',
           },
           manufacturer: {
             multiselect: false,

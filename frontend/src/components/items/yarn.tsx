@@ -2,7 +2,7 @@ import { ItemBase } from '.';
 import { CSSProperties } from 'react';
 import { IconLabel } from '../labels';
 import { HookSizingLabel, YarnSizingLabel } from '../sizing';
-import { Scale, Sigma } from 'lucide-react';
+import { Scale } from 'lucide-react';
 import { YarnRecord } from '@/@data/yarns.types';
 import { ColorCodeBadge, ManufacturerBadge, YarnTypeBadge } from '../badges';
 import { YarnDetailsDialog } from '../dialogs/yarn';
@@ -16,10 +16,10 @@ export function YarnItem({ data: yarn }: { data: YarnRecord }) {
       style={
         {
           '--item-color': hslValue,
-          '--tw-ring-color': 'hsla(var(--item-color), 0.5)',
+          '--tw-ring-color': 'hsla(var(--item-color), 0.8)',
         } as CSSProperties
       }
-      className="ring-2 transition-shadow hover:cursor-pointer hover:ring-4"
+      className="ring-4 transition-shadow hover:cursor-pointer hover:ring-8"
       bgPicture={yarn?.expand?.pictures}
       detailsDialog={<YarnDetailsDialog yarn={yarn} />}
     >
@@ -30,14 +30,14 @@ export function YarnItem({ data: yarn }: { data: YarnRecord }) {
             <YarnTypeBadge yarnType={yarn?.expand?.type} />
             <ColorCodeBadge
               color={`hsl(var(--item-color))`}
-              value={yarn?.expand?.code?.name}
+              value={yarn?.code}
             />
           </div>
           <div className="flex gap-4 pt-2">
-            <YarnSizingLabel value={yarn.expand?.yarn_size?.value ?? 0} />
+            <YarnSizingLabel value={yarn.yarn_size ?? 0} />
             <HookSizingLabel
-              min={yarn.expand?.hook_size?.[0].value ?? 0}
-              max={yarn.expand?.hook_size?.[1].value ?? 0}
+              min={yarn.hook_size_min ?? 0}
+              max={yarn.hook_size_max ?? 0}
             />
           </div>
         </div>
@@ -45,10 +45,6 @@ export function YarnItem({ data: yarn }: { data: YarnRecord }) {
           <IconLabel
             icon={<Scale className="h-4 w-4 opacity-70" />}
             value={`${yarn.weight} g`}
-          />
-          <IconLabel
-            icon={<Sigma className="h-4  w-4 opacity-70" />}
-            value={yarn.quantity}
           />
         </div>
       </div>
