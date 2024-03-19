@@ -1,95 +1,124 @@
 import { z } from 'zod';
 import { Input } from '../ui/input';
-import { Color, PickerPicture } from '../picture';
+import { Color } from '../picture';
 import { createUniqueFieldSchema, useTsController } from '@ts-react/form';
-import { useCreatePicture, useUpdatePicture } from '@/@data/pictures';
-import { useCallback, useEffect, useState } from 'react';
-import { cn } from '@/lib/utils';
+import { useRef, useEffect, useState, useCallback } from 'react';
+import { cn, parseRgbExpression, rgbaToHsl } from '@/lib/utils';
 import { Label } from '../ui/label';
 import { ErrorLabel } from './errorLabel';
+import { ImageColorPicker } from 'react-image-color-picker';
 
 export const CameraCaptureSchema = createUniqueFieldSchema(
   z.object({
-    picture: z.string().optional(),
-    color: z
-      .object({
-        h: z.number(),
-        s: z.number(),
-        l: z.number(),
-      })
-      .optional(),
+    file: z.instanceof(File),
+    color: z.object({
+      h: z.number(),
+      s: z.number(),
+      l: z.number(),
+    }),
   }),
   'cameraCapture'
 );
 export function CameraCaptureField(props: any) {
   const { field, error } =
     useTsController<z.infer<typeof CameraCaptureSchema>>();
-  const [selectedColor, setSelectedColor] = useState<Color | null>(null);
-  const { mutate: updatePicture, data: udata } = useUpdatePicture();
-  const { mutate: createPicture, data: cdata } = useCreatePicture();
-  const data = udata ?? cdata;
 
-  useEffect(() => {
-    if (data) {
-      field.onChange({ ...field.value, picture: data.id });
-      if (selectedColor) {
-        field.onChange({
-          ...field.value,
-          color: {
-            h: selectedColor.h,
-            s: selectedColor.s,
-            l: selectedColor.l,
-          },
-        });
-      }
-    }
-  }, [data, selectedColor, field]);
+  const [selectedColor, setSelectedColor] = useState<Color | undefined>();
+  const [base64Content, setBase64Content] = useState<string | undefined>();
 
+  const onImagePick = useCallback(
+    (file: File) => {
+      field.onChange({ ...field.value, file: file });
+    },
+    [field]
+  );
   const onColorPick = useCallback(
-    (color: Color) => setSelectedColor(color),
-    []
+    (rgbExpression: string) => {
+      const rgb = parseRgbExpression(rgbExpression);
+      const hsl = rgbaToHsl(rgb.red, rgb.green, rgb.blue);
+      setSelectedColor(hsl);
+      field.onChange({ ...field.value, color: hsl });
+    },
+    [field]
   );
 
   return (
     <div>
       <Label>Upload picture</Label>
       <Input
-        className={cn(data || (selectedColor && 'rounded-b-none'))}
+        className={cn(selectedColor && 'rounded-b-none')}
         type="file"
         accept="image/*"
         capture
         onChange={e => {
-          if (e.target.files?.[0]) {
-            if (cdata)
-              updatePicture({
-                pictureId: cdata.id,
-                file: e.target.files?.[0],
-              });
-            else createPicture({ file: e.target.files?.[0] });
+          const file = e.target.files?.[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+              // @ts-ignore
+              setBase64Content(event.target.result);
+            };
+            reader.readAsDataURL(file);
           }
         }}
         {...props}
       />
-      {data && (
-        <div className="relative w-full">
-          <PickerPicture
-            key={data.updated}
-            picture={data}
-            className="h-full w-full"
-            onClick={onColorPick}
-            thumb="300x300"
-          />
+      {base64Content && (
+        <div
+          className="flex w-full justify-center rounded-b-md p-2"
+          style={{
+            background: `hsl(${selectedColor?.h}, ${selectedColor?.s}%, ${selectedColor?.l}%)`,
+          }}
+        >
+          <div className="overflow-hidden rounded-md ring-2 ring-white ">
+            <CustomImageColorPicker
+              onImagePick={onImagePick}
+              onColorPick={onColorPick}
+              imgSrc={base64Content}
+            />
+          </div>
         </div>
       )}
-      {selectedColor && (
-        <div
-          className="h-8 w-full rounded-b-md"
-          style={{
-            backgroundColor: `hsl(${selectedColor.h}, ${selectedColor.s}%, ${selectedColor.l}%)`,
-          }}
-        />
-      )}
       {error && <ErrorLabel error={error} />}
+    </div>
+  );
+}
+
+interface CustomImageColorPickerProps {
+  imgSrc: string;
+  onImagePick: (file: File) => void;
+  onColorPick: (color: string) => void;
+}
+
+function CustomImageColorPicker(props: CustomImageColorPickerProps) {
+  const pickerRef = useRef<HTMLCanvasElement | null>(null);
+  const { imgSrc, onColorPick, onImagePick } = props;
+
+  useEffect(() => {
+    pickerRef.current = document.getElementById(
+      'image-color-pick-canvas'
+    ) as HTMLCanvasElement | null;
+    const timeoutId = setTimeout(() => {
+      const canvas = pickerRef.current;
+      if (canvas) {
+        const dataUrl = canvas.toDataURL('image/png');
+
+        fetch(dataUrl)
+          .then(res => res.blob())
+          .then(blob => {
+            const file = new File([blob], 'cropped-image.png', {
+              type: 'image/png',
+            });
+            onImagePick(file);
+          });
+      }
+    }, 50);
+    return () => clearTimeout(timeoutId);
+  }, [imgSrc, onImagePick]);
+
+  return (
+    <div className="h-[300px] w-[300px]">
+      <ImageColorPicker imgSrc={imgSrc} onColorPick={onColorPick} zoom={0} />
     </div>
   );
 }

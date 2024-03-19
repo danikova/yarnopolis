@@ -1,7 +1,7 @@
 import { ItemBase } from '.';
 import { CSSProperties } from 'react';
 import { IconLabel } from '../labels';
-import { SizingLabelByIds } from '../sizing';
+import { HookSizingLabel, YarnSizingLabel } from '../sizing';
 import { Scale, Sigma } from 'lucide-react';
 import { YarnRecord } from '@/@data/yarns.types';
 import { ColorCodeBadge, ManufacturerBadge, YarnTypeBadge } from '../badges';
@@ -30,11 +30,15 @@ export function YarnItem({ data: yarn }: { data: YarnRecord }) {
             <YarnTypeBadge yarnType={yarn?.expand?.type} />
             <ColorCodeBadge
               color={`hsl(var(--item-color))`}
-              value={yarn?.code}
+              value={yarn?.expand?.code?.name}
             />
           </div>
-          <div className="flex flex-col gap-2 pt-2">
-            <SizingLabelByIds sizeIds={yarn.size} />
+          <div className="flex gap-4 pt-2">
+            <YarnSizingLabel value={yarn.expand?.yarn_size?.value ?? 0} />
+            <HookSizingLabel
+              min={yarn.expand?.hook_size?.[0].value ?? 0}
+              max={yarn.expand?.hook_size?.[1].value ?? 0}
+            />
           </div>
         </div>
         <div className="flex flex-[0_0_auto] flex-row-reverse gap-4">

@@ -73,8 +73,10 @@ export function MultiSelect<T extends BaseRecord = BaseRecord>({
                   const newSelectedSet = new Set(selectedSet);
                   newSelectedSet.add(option);
                   onSelectionChange && onSelectionChange([...newSelectedSet]);
+                  if(newSelectedSet.size === options.length) setIsOpen(false);
                 } else {
                   onSelectionChange && onSelectionChange([option]);
+                  setIsOpen(false);
                 }
               }}
             >

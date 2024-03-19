@@ -18,6 +18,7 @@ import {
   CameraCaptureField,
   CameraCaptureSchema,
 } from './fields/cameraCapture';
+import { SizeRangeField, SizeRangeSchema } from './fields/sizeRange';
 
 const mapping = [
   [z.string(), TextField] as const,
@@ -29,6 +30,7 @@ const mapping = [
   [YarnCodesSchema, YarnCodesField] as const,
   [SizeMinMaxSchema, SizeMinMaxField] as const,
   [CameraCaptureSchema, CameraCaptureField] as const,
+  [SizeRangeSchema, SizeRangeField] as const,
 ] as const;
 
 function MyCustomFormComponent({

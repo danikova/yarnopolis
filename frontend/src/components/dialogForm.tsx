@@ -59,7 +59,14 @@ function DialogFormContent({ setIsOpen, ...props }: FormContentProps) {
   });
 
   return (
-    <DialogContent className="max-h-svh overflow-x-auto">
+    <DialogContent
+      className="max-h-svh overflow-x-auto md:max-h-[80svh]"
+      close={{
+        style: {
+          display: 'none',
+        },
+      }}
+    >
       <DialogHeader>
         {props.title && <DialogTitle>{props.title}</DialogTitle>}
         {props.description && (
