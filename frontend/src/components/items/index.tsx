@@ -38,6 +38,7 @@ export function ItemBase({
               <Picture
                 picture={bgPicture}
                 className="h-full w-full object-cover opacity-50 blur-[0.3px]"
+                thumb="300x300"
               />
             </div>
           )}
