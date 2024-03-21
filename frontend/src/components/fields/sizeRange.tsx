@@ -40,7 +40,7 @@ export function SizeRangeField(props: any) {
         {...props}
       />
       <YarnSizingLabel value={item?.value ?? data?.[0].value ?? 0} />
-      {error && <ErrorLabel error={error} />}
+      <ErrorLabel error={error} />
     </div>
   );
 }

@@ -41,7 +41,7 @@ export function MultiSelectField({ label, ...props }: MultiSelectFieldProps) {
         }}
         {...props}
       />
-      {error?.map((e, i) => <ErrorLabel key={i} error={e} />)}
+      <ErrorLabel error={error} />
     </div>
   );
 }

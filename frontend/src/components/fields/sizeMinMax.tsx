@@ -61,7 +61,7 @@ export function SizeMinMaxField(props: any) {
         min={minItem?.value ?? data?.[0].value ?? 0}
         max={maxItem?.value ?? data?.[data?.length - 1].value ?? 0}
       />
-      {error && <ErrorLabel error={error} />}
+      <ErrorLabel error={error} />
     </div>
   );
 }
