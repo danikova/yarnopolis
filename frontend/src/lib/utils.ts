@@ -1,6 +1,6 @@
 import { YarnRecord } from '@/@data/yarns.types';
 import { type ClassValue, clsx } from 'clsx';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useMap as useMapOriginal } from '@uidotdev/usehooks';
 import { twMerge } from 'tailwind-merge';
 
@@ -70,4 +70,34 @@ export function rgbaToHsl(r: number, g: number, b: number) {
     s: Math.round(s * 100),
     l: Math.round(l * 100),
   };
+}
+
+export function useWhatChanged(props: Record<string, any>) {
+  // cache the last set of props
+  const prev = useRef(props);
+
+  useEffect(() => {
+    // check each prop to see if it has changed
+    const changed = Object.entries(props).reduce(
+      (a, [key, prop]: [string, unknown]) => {
+        if (prev.current[key] === prop) return a;
+        return {
+          ...a,
+          [key]: {
+            prev: prev.current[key],
+            next: prop,
+          },
+        };
+      },
+      {} as { [k: string]: any }
+    );
+
+    if (Object.keys(changed).length > 0) {
+      console.group('Props That Changed');
+      console.log(changed);
+      console.groupEnd();
+    }
+
+    prev.current = props;
+  }, [props]);
 }

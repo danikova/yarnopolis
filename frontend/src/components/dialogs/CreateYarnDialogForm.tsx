@@ -78,7 +78,6 @@ function useOnSubmit() {
         color: color.id,
       };
       await createYarn(newYarnData);
-      console.log(newYarnData);
     },
     [createYarn, createColor, uploadPicture]
   );
