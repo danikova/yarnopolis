@@ -1,9 +1,10 @@
 import { cn } from '@/lib/utils';
 import { Picture } from '../picture';
 import { Card, CardContent } from '../ui/card';
-import { PictureRecord } from '@/@data/pictures.type';
-import { CSSProperties, PropsWithChildren } from 'react';
 import { Dialog, DialogTrigger } from '../ui/dialog';
+import { PictureRecord } from '@/@data/pictures.type';
+import { useInView } from 'react-intersection-observer';
+import { CSSProperties, PropsWithChildren } from 'react';
 
 export function ItemBase({
   children,
@@ -17,6 +18,11 @@ export function ItemBase({
   bgPicture?: PictureRecord;
   detailsDialog?: JSX.Element;
 }>) {
+  const { ref, inView } = useInView({
+    /* Optional options */
+    threshold: 0,
+  });
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -26,8 +32,9 @@ export function ItemBase({
             className
           )}
           style={style}
+          ref={ref}
         >
-          {bgPicture && (
+          {inView && bgPicture && (
             <div
               className="absolute left-0 top-0 z-0 h-full w-full overflow-hidden rounded-md"
               style={{
