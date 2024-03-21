@@ -38,3 +38,19 @@ export function useCreateYarn(
     ...options,
   });
 }
+
+export function useUpdateYarn(
+  yarnId: string,
+  options?: Partial<UseMutationOptions<YarnRecord, Error, CreateYarnInput>>
+) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ['updateYarn', yarnId],
+    mutationFn: async input =>
+      await pb.collection('yarns').update(yarnId, input),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['yarns'] });
+    },
+    ...options,
+  });
+}

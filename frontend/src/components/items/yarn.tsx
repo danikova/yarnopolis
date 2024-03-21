@@ -5,7 +5,7 @@ import { HookSizingLabel, YarnSizingLabel } from '../sizing';
 import { Scale } from 'lucide-react';
 import { YarnRecord } from '@/@data/yarns.types';
 import { ColorCodeBadge, ManufacturerBadge, YarnTypeBadge } from '../badges';
-import { YarnDetailsDialog } from '../dialogs/yarn';
+import { YarnDetailsDialog } from '../dialogs/yarnDetails';
 import { useHSLstringFromYarn } from '@/lib/utils';
 
 export function YarnItem({ data: yarn }: { data: YarnRecord }) {
