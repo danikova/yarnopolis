@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { Input } from '../ui/input';
 import { Color } from '../picture';
 import { createUniqueFieldSchema, useTsController } from '@ts-react/form';
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState, memo } from 'react';
 import { cn, parseRgbExpression, rgbaToHsl } from '@/lib/utils';
 import { Label } from '../ui/label';
 import { ErrorLabel } from './errorLabel';
@@ -24,23 +24,15 @@ export function CameraCaptureField(props: any) {
     useTsController<z.infer<typeof CameraCaptureSchema>>();
 
   const [selectedColor, setSelectedColor] = useState<Color | undefined>();
+  const [selectedFile, setSelectedFile] = useState<File | undefined>();
   const [base64Content, setBase64Content] = useState<string | undefined>();
 
-  const onImagePick = useCallback(
-    (file: File) => {
-      field.onChange({ ...field.value, file: file });
-    },
-    [field]
-  );
-  const onColorPick = useCallback(
-    (rgbExpression: string) => {
-      const rgb = parseRgbExpression(rgbExpression);
-      const hsl = rgbaToHsl(rgb.red, rgb.green, rgb.blue);
-      setSelectedColor(hsl);
-      field.onChange({ ...field.value, color: hsl });
-    },
-    [field]
-  );
+  useEffect(() => {
+    field.onChange({
+      file: selectedFile,
+      color: selectedColor,
+    });
+  }, [selectedFile, selectedColor]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div>
@@ -72,14 +64,20 @@ export function CameraCaptureField(props: any) {
         >
           <div className="overflow-hidden rounded-md ring-2 ring-white ">
             <CustomImageColorPicker
-              onImagePick={onImagePick}
-              onColorPick={onColorPick}
+              onImagePick={(file: File) => {
+                setSelectedFile(file);
+              }}
+              onColorPick={(rgbExpression: string) => {
+                const rgb = parseRgbExpression(rgbExpression);
+                const hsl = rgbaToHsl(rgb.red, rgb.green, rgb.blue);
+                setSelectedColor(hsl);
+              }}
               imgSrc={base64Content}
             />
           </div>
         </div>
       )}
-      {error && <ErrorLabel error={error} />}
+      <ErrorLabel error={error} />
     </div>
   );
 }
@@ -90,35 +88,38 @@ interface CustomImageColorPickerProps {
   onColorPick: (color: string) => void;
 }
 
-function CustomImageColorPicker(props: CustomImageColorPickerProps) {
-  const pickerRef = useRef<HTMLCanvasElement | null>(null);
-  const { imgSrc, onColorPick, onImagePick } = props;
+const CustomImageColorPicker = memo(
+  function CustomImageColorPicker(props: CustomImageColorPickerProps) {
+    const pickerRef = useRef<HTMLCanvasElement | null>(null);
+    const { imgSrc, onColorPick, onImagePick } = props;
 
-  useEffect(() => {
-    pickerRef.current = document.getElementById(
-      'image-color-pick-canvas'
-    ) as HTMLCanvasElement | null;
-    const timeoutId = setTimeout(() => {
-      const canvas = pickerRef.current;
-      if (canvas) {
-        const dataUrl = canvas.toDataURL('image/png');
+    useEffect(() => {
+      pickerRef.current = document.getElementById(
+        'image-color-pick-canvas'
+      ) as HTMLCanvasElement | null;
+      const timeoutId = setTimeout(() => {
+        const canvas = pickerRef.current;
+        if (canvas) {
+          const dataUrl = canvas.toDataURL('image/png');
 
-        fetch(dataUrl)
-          .then(res => res.blob())
-          .then(blob => {
-            const file = new File([blob], 'cropped-image.png', {
-              type: 'image/png',
+          fetch(dataUrl)
+            .then(res => res.blob())
+            .then(blob => {
+              const file = new File([blob], 'cropped-image.png', {
+                type: 'image/png',
+              });
+              onImagePick(file);
             });
-            onImagePick(file);
-          });
-      }
-    }, 50);
-    return () => clearTimeout(timeoutId);
-  }, [imgSrc, onImagePick]);
+        }
+      }, 50);
+      return () => clearTimeout(timeoutId);
+    }, [imgSrc, onImagePick]);
 
-  return (
-    <div className="h-[300px] w-[300px]">
-      <ImageColorPicker imgSrc={imgSrc} onColorPick={onColorPick} zoom={0} />
-    </div>
-  );
-}
+    return (
+      <div className="h-[300px] w-[300px]">
+        <ImageColorPicker imgSrc={imgSrc} onColorPick={onColorPick} zoom={0} />
+      </div>
+    );
+  },
+  (prevProps, props) => prevProps.imgSrc === props.imgSrc
+);
