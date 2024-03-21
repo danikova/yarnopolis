@@ -13,7 +13,7 @@ import { useToast } from '../ui/use-toast';
 
 export const CreateNewYarnSchema = z.object({
   picture: CameraCaptureSchema,
-  code: z.string().optional(),
+  code: z.string(),
   manufacturer: ManufacturersSchema.optional(),
   type: YarnTypesSchema.optional(),
   yarn_size: z.number().optional(),
@@ -32,6 +32,9 @@ export function CreateYarnDialogForm() {
         onSubmit,
         schema: CreateNewYarnSchema,
         props: {
+          picture: {
+            label: 'Upload picture',
+          },
           code: {
             label: 'Code',
           },

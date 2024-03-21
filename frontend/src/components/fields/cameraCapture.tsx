@@ -19,7 +19,7 @@ export const CameraCaptureSchema = createUniqueFieldSchema(
   }),
   'cameraCapture'
 );
-export function CameraCaptureField(props: any) {
+export function CameraCaptureField(props: { label: string }) {
   const { field, error } =
     useTsController<z.infer<typeof CameraCaptureSchema>>();
 
@@ -36,7 +36,7 @@ export function CameraCaptureField(props: any) {
 
   return (
     <div>
-      <Label>Upload picture</Label>
+      <Label>{props.label}</Label>
       <Input
         className={cn(selectedColor && 'rounded-b-none')}
         type="file"
@@ -53,7 +53,6 @@ export function CameraCaptureField(props: any) {
             setBase64Content(dataString as string);
           }
         }}
-        {...props}
       />
       {base64Content && (
         <div

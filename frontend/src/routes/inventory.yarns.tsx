@@ -9,7 +9,7 @@ import { YarnItem } from '@/components/items/yarn';
 import { SheetFilter } from '@/components/sheetFilter';
 import { createFileRoute } from '@tanstack/react-router';
 import { SizeMinMaxSchema } from '@/components/fields/sizeMinMax';
-import { CreateYarnDialogForm } from '@/components/dialogs/CreateYarnDialogForm';
+import { CreateYarnDialogForm } from '@/components/dialogs/createYarn';
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 
 const YarnFilterSchema = z.object({
