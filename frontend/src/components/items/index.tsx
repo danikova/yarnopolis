@@ -27,10 +27,7 @@ export function ItemBase({
     <Dialog>
       <DialogTrigger asChild>
         <Card
-          className={cn(
-            'relative h-fit w-full md:w-[300px] lg:w-[400px]',
-            className
-          )}
+          className={cn('relative h-fit w-full', className)}
           style={style}
           ref={ref}
         >
