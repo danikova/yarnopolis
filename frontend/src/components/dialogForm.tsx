@@ -14,6 +14,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ComponentPropsWithoutRef, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { useToast } from './ui/use-toast';
+import { ClientResponseError } from 'pocketbase';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export interface DialogFormProps {
@@ -57,6 +59,7 @@ function DialogFormContent({ setIsOpen, ...props }: FormContentProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(props.formProps.schema),
   });
+  const { toast } = useToast();
 
   return (
     <DialogContent
@@ -76,9 +79,19 @@ function DialogFormContent({ setIsOpen, ...props }: FormContentProps) {
       <TsForm
         {...props.formProps}
         form={form}
-        onSubmit={(data: FormData) => {
-          props.formProps.onSubmit && props.formProps.onSubmit(data);
-          setIsOpen(false);
+        onSubmit={async (data: FormData) => {
+          try {
+            props.formProps.onSubmit && (await props.formProps.onSubmit(data));
+            setIsOpen(false);
+          } catch (e) {
+            if (e instanceof ClientResponseError) {
+              toast({
+                title: e.message,
+                description: JSON.stringify(e.data.data, null, 2),
+              });
+            }
+            console.error(e);
+          }
         }}
         renderAfter={() => (
           <div className="flex flex-row-reverse flex-wrap gap-4">

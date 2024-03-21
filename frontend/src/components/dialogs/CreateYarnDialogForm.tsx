@@ -9,6 +9,7 @@ import {
   ManufacturersSchema,
   YarnTypesSchema,
 } from '../fields/specificMultiSelects';
+import { useToast } from '../ui/use-toast';
 
 export const CreateNewYarnSchema = z.object({
   picture: CameraCaptureSchema,
@@ -63,6 +64,7 @@ function useOnSubmit() {
   const { mutateAsync: createYarn } = useCreateYarn();
   const { mutateAsync: createColor } = useCreateColor();
   const { mutateAsync: uploadPicture } = useCreatePicture();
+  const { toast } = useToast();
 
   return useCallback(
     async (data: z.infer<typeof CreateNewYarnSchema>) => {
@@ -77,8 +79,9 @@ function useOnSubmit() {
         pictures: picture.id,
         color: color.id,
       };
-      await createYarn(newYarnData);
+      const newYarn = await createYarn(newYarnData);
+      toast({ title: `Yarn created with id: ${newYarn.id}` });
     },
-    [createYarn, createColor, uploadPicture]
+    [createYarn, createColor, uploadPicture, toast]
   );
 }
