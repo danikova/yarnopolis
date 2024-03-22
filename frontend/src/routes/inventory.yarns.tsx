@@ -11,6 +11,8 @@ import { createFileRoute } from '@tanstack/react-router';
 import { SizeMinMaxSchema } from '@/components/fields/sizeMinMax';
 import { CreateYarnDialogForm } from '@/components/dialogs/createYarn';
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
+import { SortSelector } from './-components/SortSelector';
+import { useState } from 'react';
 
 const YarnFilterSchema = z.object({
   manufacturer: ManufacturersSchema.optional(),
@@ -25,7 +27,8 @@ export const Route = createFileRoute('/inventory/yarns')({
 });
 
 function Inventory() {
-  const { data } = useYarns();
+  const [sort, setSort] = useState<string>('-created');
+  const { data } = useYarns(sort);
 
   return (
     <>
@@ -36,11 +39,24 @@ function Inventory() {
             schema: YarnFilterSchema,
           }}
         />
+        <SortSelector
+          onSortChange={(value, direction) => {
+            switch (value) {
+              case 'lightness':
+                setSort(`${direction === 'asc' ? '-' : ''}color.lightness`);
+                break;
+              case 'hook_size':
+                setSort(
+                  `${direction === 'asc' ? '' : '-'}hook_size_min,${direction === 'asc' ? '' : '-'}hook_size_max`
+                );
+                break;
+              default:
+                setSort(`${direction === 'asc' ? '' : '-'}${value}`);
+            }
+          }}
+        />
         <CreateYarnDialogForm />
       </div>
-      {/* <div className="relative z-10 flex max-h-lvh flex-wrap justify-center gap-4 overflow-auto p-8 pt-[calc(2rem*2+40px)] md:justify-normal">
-        {data?.map(yarn => <YarnItem key={yarn.id} data={yarn} />)}
-      </div> */}
       <div className="xl: max-h-lvh justify-center overflow-auto xl:flex">
         <ResponsiveMasonry
           columnsCountBreakPoints={{ 640: 1, 768: 2, 1024: 3, 1280: 4 }}

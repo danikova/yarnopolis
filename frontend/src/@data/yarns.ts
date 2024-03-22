@@ -10,14 +10,15 @@ import {
 } from '@tanstack/react-query';
 
 export function useYarns(
+  sort?: string,
   options?: Partial<UseQueryOptions<YarnRecord[], Error>>
 ) {
   return useQuery({
-    queryKey: ['yarns'],
+    queryKey: ['yarns', sort],
     queryFn: async () =>
       await pb.collection('yarns').getFullList<YarnRecord>({
         expand: 'pictures,type,manufacturer,color',
-        sort: '-created',
+        sort: sort ?? '-created',
       }),
     ...options,
   });
