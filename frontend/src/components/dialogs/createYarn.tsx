@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { useCreateYarn } from '@/@data/yarns';
 import { DialogForm } from '@/components/dialogForm';
 import { useCreateColor } from '@/@data/colors';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useCreatePicture } from '@/@data/pictures';
 import { CameraCaptureSchema } from '../fields/cameraCapture';
 import {
@@ -10,6 +10,9 @@ import {
   YarnTypesSchema,
 } from '../fields/specificMultiSelects';
 import { useToast } from '../ui/use-toast';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useYarnAverages } from '@/@data/yarnAverages';
 
 export const CreateNewYarnSchema = z.object({
   picture: CameraCaptureSchema,
@@ -25,10 +28,19 @@ export const CreateNewYarnSchema = z.object({
 export function CreateYarnDialogForm() {
   const onSubmit = useOnSubmit();
 
+  const form = useForm<z.infer<typeof CreateNewYarnSchema>>({
+    resolver: zodResolver(CreateNewYarnSchema),
+  });
+  const { watch } = form;
+
+  const manufacturer = watch('manufacturer') as string[];
+  const averageValue = useAverageValues(manufacturer && manufacturer[0]);
+
   return (
     <DialogForm
       title="Create new yarn"
       formProps={{
+        form,
         onSubmit,
         schema: CreateNewYarnSchema,
         props: {
@@ -43,12 +55,15 @@ export function CreateYarnDialogForm() {
           },
           hook_size_min: {
             label: 'Min. hook size',
+            placeholder: averageValue.avg_hook_size_min,
           },
           hook_size_max: {
             label: 'Max. hook size',
+            placeholder: averageValue.avg_hook_size_max,
           },
           yarn_size: {
             label: 'Yarn size',
+            placeholder: averageValue.avg_yarn_size,
           },
           manufacturer: {
             multiselect: false,
@@ -63,6 +78,7 @@ export function CreateYarnDialogForm() {
     />
   );
 }
+
 function useOnSubmit() {
   const { mutateAsync: createYarn } = useCreateYarn();
   const { mutateAsync: createColor } = useCreateColor();
@@ -87,4 +103,33 @@ function useOnSubmit() {
     },
     [createYarn, createColor, uploadPicture, toast]
   );
+}
+
+type AvgType = {
+  avg_hook_size_max?: string;
+  avg_hook_size_min?: string;
+  avg_yarn_size?: string;
+};
+
+function useAverageValues(manufacturerId?: string) {
+  const { data } = useYarnAverages();
+  return useMemo<AvgType>(() => {
+    for (const item of data ?? []) {
+      if (item.id === manufacturerId) {
+        return {
+          avg_hook_size_max:
+            'avg. ' + roundToFirstDecimal(item.avg_hook_size_max).toString(),
+          avg_hook_size_min:
+            'avg. ' + roundToFirstDecimal(item.avg_hook_size_min).toString(),
+          avg_yarn_size:
+            'avg. ' + roundToFirstDecimal(item.avg_yarn_size).toString(),
+        };
+      }
+    }
+    return {};
+  }, [data, manufacturerId]);
+}
+
+function roundToFirstDecimal(value: number) {
+  return Math.round(value * 10) / 10;
 }

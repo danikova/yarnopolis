@@ -10,8 +10,6 @@ import { z } from 'zod';
 import { uniqueId } from 'lodash';
 import { TsForm } from './tsForm';
 import { Button } from './ui/button';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { ComponentPropsWithoutRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useToast } from './ui/use-toast';
@@ -56,9 +54,6 @@ interface FormContentProps extends DialogFormProps {
 
 function DialogFormContent({ setIsOpen, ...props }: FormContentProps) {
   type FormData = z.infer<typeof props.formProps.schema>;
-  const form = useForm<FormData>({
-    resolver: zodResolver(props.formProps.schema),
-  });
   const { toast } = useToast();
 
   return (
@@ -77,7 +72,6 @@ function DialogFormContent({ setIsOpen, ...props }: FormContentProps) {
       </DialogHeader>
       <TsForm
         {...props.formProps}
-        form={form}
         onSubmit={async (data: FormData) => {
           try {
             props.formProps.onSubmit && (await props.formProps.onSubmit(data));
@@ -92,7 +86,7 @@ function DialogFormContent({ setIsOpen, ...props }: FormContentProps) {
             console.error(e);
           }
         }}
-        renderAfter={() => (
+        renderAfter={raProps => (
           <div className="flex flex-row-reverse flex-wrap gap-4">
             <Button type="submit" className="flex-auto">
               Create new
@@ -105,6 +99,8 @@ function DialogFormContent({ setIsOpen, ...props }: FormContentProps) {
             >
               Cancel
             </Button>
+            {props.formProps.renderAfter &&
+              props.formProps.renderAfter(raProps)}
           </div>
         )}
       />
