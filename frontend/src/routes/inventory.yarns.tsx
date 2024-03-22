@@ -42,6 +42,9 @@ function Inventory() {
         <SortSelector
           onSortChange={(value, direction) => {
             switch (value) {
+              case 'hue':
+                setSort(`${direction === 'asc' ? '-' : ''}color.hue`);
+                break;
               case 'lightness':
                 setSort(`${direction === 'asc' ? '-' : ''}color.lightness`);
                 break;

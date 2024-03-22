@@ -17,6 +17,7 @@ const SortingOptions = [
   'updated',
   'yarn_size',
   'hook_size',
+  'hue',
   'lightness',
   'weight',
 ] as const;
