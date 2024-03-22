@@ -69,6 +69,7 @@ function Inventory() {
                   <YarnItem data={yarn} />
                 </div>
               ))}
+              {data?.length === 0 && <span></span>}
             </Masonry>
           </ResponsiveMasonry>
         </div>
