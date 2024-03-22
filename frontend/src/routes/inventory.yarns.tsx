@@ -57,20 +57,26 @@ function Inventory() {
         />
         <CreateYarnDialogForm />
       </div>
-      <div className="xl: max-h-lvh justify-center overflow-auto xl:flex">
-        <ResponsiveMasonry
-          columnsCountBreakPoints={{ 640: 1, 768: 2, 1024: 3, 1280: 4 }}
-          className="block p-8 pt-[calc(2rem*2+40px)] xl:w-[80rem] "
-        >
-          <Masonry className="gap-[1rem_!important]">
-            {data?.map(yarn => (
-              <div key={yarn.id} className="mb-4 block w-full">
-                <YarnItem data={yarn} />
-              </div>
-            ))}
-          </Masonry>
-        </ResponsiveMasonry>
-      </div>
+      {data?.length !== 0 ? (
+        <div className="xl: max-h-lvh justify-center overflow-auto xl:flex">
+          <ResponsiveMasonry
+            columnsCountBreakPoints={{ 640: 1, 768: 2, 1024: 3, 1280: 4 }}
+            className="block p-8 pt-[calc(2rem*2+40px)] xl:w-[80rem] "
+          >
+            <Masonry className="gap-[1rem_!important]">
+              {data?.map(yarn => (
+                <div key={yarn.id} className="mb-4 block w-full">
+                  <YarnItem data={yarn} />
+                </div>
+              ))}
+            </Masonry>
+          </ResponsiveMasonry>
+        </div>
+      ) : (
+        <div className="fixed left-0 top-0 flex h-lvh w-lvw items-center justify-center">
+          <span>No yarns found</span>
+        </div>
+      )}
     </>
   );
 }

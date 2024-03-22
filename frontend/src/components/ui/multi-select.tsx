@@ -3,7 +3,7 @@ import { BaseRecord } from '@/@data/base.types';
 import { useClickAway } from '@uidotdev/usehooks';
 import * as SelectPrimitive from '@radix-ui/react-select';
 import { Select, SelectContent, SelectItem } from './select';
-import { ElementRef, useMemo, useRef, useState } from 'react';
+import { ElementRef, Fragment, useMemo, useRef, useState } from 'react';
 
 export interface Option<T> {
   label: string;
@@ -51,11 +51,13 @@ export function MultiSelect<T extends BaseRecord = BaseRecord>({
         className="flex h-fit w-full flex-wrap items-center justify-normal gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
       >
         {[...selectedSet].map(option =>
-          getBadgeComponent(option, () => {
+          <Fragment key={option.value.id}>
+            {getBadgeComponent(option, () => {
             const newSelectedSet = new Set(selectedSet);
             newSelectedSet.delete(option);
             onSelectionChange && onSelectionChange([...newSelectedSet]);
-          })
+          })}
+          </Fragment>
         )}
         {selectedSet.size === 0 && (
           <span ref={placeholderRef} className="text-muted-foreground">
@@ -67,6 +69,7 @@ export function MultiSelect<T extends BaseRecord = BaseRecord>({
         {[...notSelectedSet].map(option => {
           return (
             <SelectItem
+              key={option.value.id}
               value={option.value.id}
               onClick={() => {
                 if(multiselect){
