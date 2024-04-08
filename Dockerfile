@@ -19,9 +19,9 @@ RUN apk add --no-cache \
 ADD https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/pocketbase_${PB_VERSION}_linux_amd64.zip /tmp/pb.zip
 RUN unzip /tmp/pb.zip -d .
 
+COPY backend/* ./
+COPY --from=frontend-builder /app/frontend/dist/ ./pb_public/
 COPY ./start.sh .
-COPY backend/* .
-COPY --from=frontend-builder /app/frontend/dist ./pb_public/
 
 EXPOSE 8080
 
