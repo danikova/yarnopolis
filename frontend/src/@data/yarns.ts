@@ -55,3 +55,17 @@ export function useUpdateYarn(
     ...options,
   });
 }
+
+export function useDeleteYarn(
+  options?: Partial<UseMutationOptions<boolean, Error, string>>
+) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ['deleteYarn'],
+    mutationFn: async yarnId => await pb.collection('yarns').delete(yarnId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['yarns'] });
+    },
+    ...options,
+  });
+}

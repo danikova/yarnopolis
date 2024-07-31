@@ -16,7 +16,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { isEmpty, isNil, pickBy, isEqual, isArray, uniqueId } from 'lodash';
 import { FileRoutesByPath, useNavigate } from '@tanstack/react-router';
 import { ComponentPropsWithoutRef, useMemo, useState } from 'react';
-import { cn } from '@/lib/utils';
+import { cn, getKeyValue } from '@/lib/utils';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export interface SheetFilterProps {
@@ -146,9 +146,4 @@ function SheetForm({ setIsOpen, ...props }: FormContentProps) {
       />
     </SheetContent>
   );
-}
-
-function getKeyValue(obj: Record<string, any>, key: string) {
-  const value = obj[key];
-  return isNil(value) || isEmpty(value) ? undefined : value;
 }

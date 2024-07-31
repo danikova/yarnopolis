@@ -3,6 +3,7 @@ import { type ClassValue, clsx } from 'clsx';
 import { useEffect, useMemo, useRef } from 'react';
 import { useMap as useMapOriginal } from '@uidotdev/usehooks';
 import { twMerge } from 'tailwind-merge';
+import { isEmpty, isNil } from 'lodash';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -145,4 +146,16 @@ export async function cropFile(
 
     reader.readAsDataURL(file);
   });
+}
+
+function _isEmpty(value: any): boolean {
+  // Check if value is an object, array, or string
+  return (
+    (typeof value === 'object' || typeof value === 'string') && isEmpty(value)
+  );
+}
+
+export function getKeyValue(obj: Record<string, any>, key: string) {
+  const value = obj[key];
+  return isNil(value) || _isEmpty(value) ? undefined : value;
 }

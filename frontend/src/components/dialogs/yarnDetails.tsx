@@ -1,4 +1,4 @@
-import { useHSLstringFromYarn } from '@/lib/utils';
+import { getKeyValue, useHSLstringFromYarn } from '@/lib/utils';
 import { DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { YarnRecord } from '@/@data/yarns.types';
 import { TsForm } from '../tsForm';
@@ -7,16 +7,18 @@ import {
   ManufacturersSchema,
   YarnTypesSchema,
 } from '../fields/specificMultiSelects';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, isEqual } from 'lodash';
 import { CameraCaptureSchema } from '../fields/cameraCapture';
 import { Picture } from '../picture';
 import { Button } from '../ui/button';
-import { useUpdateYarn } from '@/@data/yarns';
+import { useDeleteYarn, useUpdateYarn } from '@/@data/yarns';
 import { useToast } from '../ui/use-toast';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useCreateColor } from '@/@data/colors';
 import { useCreatePicture } from '@/@data/pictures';
 import { ClientResponseError } from 'pocketbase';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 export const UpdateYarnSchema = z.object({
   picture: CameraCaptureSchema.optional(),
@@ -32,12 +34,35 @@ export const UpdateYarnSchema = z.object({
 export function YarnDetailsDialog({ yarn }: { yarn: YarnRecord }) {
   const hslValue = useHSLstringFromYarn(yarn);
   const onSubmit = useOnSubmit(yarn);
+  const { mutateAsync: deleteYarn } = useDeleteYarn();
 
-  const defaultValues = {
-    ...cloneDeep(yarn),
-    manufacturer: [yarn.manufacturer],
-    type: [yarn.type],
-  };
+  const defaultValues = useMemo(
+    () => ({
+      ...cloneDeep(yarn),
+      manufacturer: [yarn.manufacturer],
+      type: [yarn.type],
+    }),
+    [yarn]
+  );
+
+  type FormData = z.infer<typeof UpdateYarnSchema>;
+  const form = useForm<FormData>({
+    resolver: zodResolver(UpdateYarnSchema),
+    defaultValues,
+  });
+  const watchedFields = form.watch();
+  const isDirty = useMemo(() => {
+    for (const fieldKey in watchedFields) {
+      const val1 = getKeyValue(defaultValues, fieldKey);
+      const val2 = getKeyValue(watchedFields, fieldKey);
+      if (val1 && val2 && !isEqual(val1, val2)) {
+        return true;
+      }
+    }
+    return false;
+  }, [watchedFields, defaultValues]);
+
+  console.log(isDirty);
 
   return (
     <DialogContent
@@ -67,9 +92,9 @@ export function YarnDetailsDialog({ yarn }: { yarn: YarnRecord }) {
         )}
         <div className="flex-auto">
           <TsForm
-            defaultValues={defaultValues}
-            onSubmit={onSubmit}
+            form={form}
             schema={UpdateYarnSchema}
+            onSubmit={onSubmit}
             props={{
               // @ts-ignore
               picture: {
@@ -101,7 +126,37 @@ export function YarnDetailsDialog({ yarn }: { yarn: YarnRecord }) {
                 addOpts: true,
               },
             }}
-            renderAfter={() => <Button type="submit">Update</Button>}
+            renderAfter={() => (
+              <div className="flex flex-row-reverse flex-wrap gap-4">
+                <Button
+                  type="submit"
+                  className="flex-[1_1_auto]"
+                  disabled={!isDirty}
+                >
+                  Update
+                </Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  className="w-fit"
+                  onClick={() => form.reset(defaultValues)}
+                  disabled={!isDirty}
+                >
+                  Reset
+                </Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  className="w-fit"
+                  onClick={() => {
+                    confirm('Are you sure you want to delete this yarn?') &&
+                      deleteYarn(yarn.id);
+                  }}
+                >
+                  Delete
+                </Button>
+              </div>
+            )}
           />
         </div>
       </div>
