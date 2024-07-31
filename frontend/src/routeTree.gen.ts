@@ -31,10 +31,16 @@ const InventoryYarnsRoute = InventoryYarnsImport.update({
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
     '/inventory/yarns': {
+      id: '/inventory/yarns'
+      path: '/inventory/yarns'
+      fullPath: '/inventory/yarns'
       preLoaderRoute: typeof InventoryYarnsImport
       parentRoute: typeof rootRoute
     }
@@ -43,9 +49,29 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren([
+export const routeTree = rootRoute.addChildren({
   IndexRoute,
   InventoryYarnsRoute,
-])
+})
 
 /* prettier-ignore-end */
+
+/* ROUTE_MANIFEST_START
+{
+  "routes": {
+    "__root__": {
+      "filePath": "__root.tsx",
+      "children": [
+        "/",
+        "/inventory/yarns"
+      ]
+    },
+    "/": {
+      "filePath": "index.tsx"
+    },
+    "/inventory/yarns": {
+      "filePath": "inventory.yarns.tsx"
+    }
+  }
+}
+ROUTE_MANIFEST_END */
