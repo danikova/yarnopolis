@@ -10,12 +10,14 @@ import { ImageColorPicker } from 'react-image-color-picker';
 
 export const CameraCaptureSchema = createUniqueFieldSchema(
   z.object({
-    file: z.instanceof(File),
-    color: z.object({
-      h: z.number(),
-      s: z.number(),
-      l: z.number(),
-    }),
+    file: z.instanceof(File).optional(),
+    color: z
+      .object({
+        h: z.number(),
+        s: z.number(),
+        l: z.number(),
+      })
+      .optional(),
   }),
   'cameraCapture'
 );
