@@ -87,7 +87,6 @@ function useOnSubmit() {
 
   return useCallback(
     async (data: z.infer<typeof CreateNewYarnSchema>) => {
-      if (!data.picture.file) return;
       const picture = await uploadPicture({ file: data.picture.file });
       const color = await createColor({
         hue: data.picture?.color?.h,

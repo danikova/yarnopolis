@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { TextField } from './fields/text';
 import { CheckBoxField } from './fields/checkBox';
 import { NumberField } from './fields/number';
-import { PropsWithChildren } from 'react';
+import { HTMLProps, PropsWithChildren } from 'react';
 import { MultiSelectField } from './fields/multiSelect';
 import {
   ManufacturersField,
@@ -19,6 +19,7 @@ import {
   CameraCaptureSchema,
 } from './fields/cameraCapture';
 import { SizeRangeField, SizeRangeSchema } from './fields/sizeRange';
+import { cn } from '@/lib/utils';
 
 const mapping = [
   [z.string(), TextField] as const,
@@ -33,14 +34,23 @@ const mapping = [
   [SizeRangeSchema, SizeRangeField] as const,
 ] as const;
 
+interface MyCustomFormProps extends HTMLProps<HTMLFormElement> {
+  onSubmit: () => void;
+  className?: string;
+}
+
 function MyCustomFormComponent({
   children,
   onSubmit,
-}: PropsWithChildren<{
-  onSubmit: () => void;
-}>) {
+  className,
+  ...props
+}: PropsWithChildren<MyCustomFormProps>) {
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-y-4">
+    <form
+      onSubmit={onSubmit}
+      className={cn('flex flex-col gap-y-4', className)}
+      {...props}
+    >
       {children}
     </form>
   );

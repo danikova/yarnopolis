@@ -20,8 +20,11 @@ import { ClientResponseError } from 'pocketbase';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+export const UpdateYarnPictureSchema = z.object({
+  picture: CameraCaptureSchema,
+});
+
 export const UpdateYarnSchema = z.object({
-  picture: CameraCaptureSchema.optional(),
   code: z.string().optional(),
   manufacturer: ManufacturersSchema.optional(),
   type: YarnTypesSchema.optional(),
@@ -33,7 +36,7 @@ export const UpdateYarnSchema = z.object({
 
 export function YarnDetailsDialog({ yarn }: { yarn: YarnRecord }) {
   const hslValue = useHSLstringFromYarn(yarn);
-  const onSubmit = useOnSubmit(yarn);
+  const { updatePictureProps, updateYarnProps } = useOnSubmit(yarn);
   const { mutateAsync: deleteYarn } = useDeleteYarn();
 
   const defaultValues = useMemo(
@@ -92,14 +95,31 @@ export function YarnDetailsDialog({ yarn }: { yarn: YarnRecord }) {
         )}
         <div className="flex-auto">
           <TsForm
-            form={form}
-            schema={UpdateYarnSchema}
-            onSubmit={onSubmit}
+            formProps={{
+              className: 'flex flex-row gap-4',
+              style: {
+                alignItems: 'flex-end',
+              },
+            }}
+            onSubmit={updatePictureProps}
+            schema={UpdateYarnPictureSchema}
             props={{
-              // @ts-ignore
               picture: {
                 label: 'Upload new picture',
               },
+            }}
+            renderAfter={() => (
+              <Button type="submit" className="flex-[1_1_auto]">
+                Update picture
+              </Button>
+            )}
+          />
+          <TsForm
+            form={form}
+            schema={UpdateYarnSchema}
+            onSubmit={updateYarnProps}
+            props={{
+              // @ts-ignore
               code: {
                 label: 'Code',
               },
@@ -170,8 +190,25 @@ function useOnSubmit(yarn: YarnRecord) {
   const { mutateAsync: uploadPicture } = useCreatePicture();
   const { toast } = useToast();
 
-  return useCallback(
-    async (data: z.infer<typeof UpdateYarnSchema>) => {
+  const updateFunction = useCallback(
+    async (data: any) => {
+      try {
+        await updateYarn(data);
+        toast({ title: 'Yarn updated' });
+      } catch (e) {
+        if (e instanceof ClientResponseError) {
+          toast({
+            title: e.message,
+            description: JSON.stringify(e.data.data, null, 2),
+          });
+        }
+      }
+    },
+    [toast, updateYarn]
+  );
+
+  const updatePictureProps = useCallback(
+    async (data: z.infer<typeof UpdateYarnPictureSchema>) => {
       const updateYarnData: Record<string, unknown> = {
         ...data,
       };
@@ -185,18 +222,20 @@ function useOnSubmit(yarn: YarnRecord) {
         updateYarnData.pictures = picture.id;
         updateYarnData.color = color.id;
       }
-      try {
-        await updateYarn(updateYarnData);
-        toast({ title: 'Yarn updated' });
-      } catch (e) {
-        if (e instanceof ClientResponseError) {
-          toast({
-            title: e.message,
-            description: JSON.stringify(e.data.data, null, 2),
-          });
-        }
-      }
+      await updateFunction(updateYarnData);
     },
-    [updateYarn, createColor, uploadPicture, toast]
+    [uploadPicture, createColor, updateFunction]
   );
+
+  const updateYarnProps = useCallback(
+    async (data: z.infer<typeof UpdateYarnSchema>) => {
+      await updateFunction(data);
+    },
+    [updateFunction]
+  );
+
+  return {
+    updatePictureProps,
+    updateYarnProps,
+  };
 }
